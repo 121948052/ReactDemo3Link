@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>简单三级联动</title>
+<script src="https://cdn.bootcss.com/react/15.4.2/react.min.js"></script>
+<script src="https://cdn.bootcss.com/react/15.4.2/react-dom.min.js"></script>
+<script src="https://cdn.bootcss.com/babel-standalone/6.22.1/babel.min.js"></script>
+</head>
+<body>
+  <div id="example"></div>
+  <script type="text/babel">
+    var selectStyle = {
+      width: '120px'
+    };
+    //District
+    var District = React.createClass({
+      render: function() {
+        return  <div>
+          District:
+          <select style={selectStyle} onChange={this.props.handleDistrict}>
+            <option data-code="610113" data-pCode="610100" value="雁塔区">雁塔区</option>
+            <option data-code="320102" data-pCode="320100" value="玄武">玄武</option>
+          </select>
+        </div>;
+      }
+    });
+
+    //City
+    var City = React.createClass({
+      handleDistrict: function(event){debugger
+        var selectedOption = event.target.selectedOptions[0];
+        this.setState({
+          district: event.target.value,
+          pCode: selectedOption.getAttribute('data-pCode')
+        })
+      },
+      render: function() {
+        return  <div>
+          City:
+          <select style={selectStyle} onChange={this.props.handleCode}>
+            <option data-code="610100" data-pCode="610000" value="西安">西安</option>
+            <option data-code="320100" data-pCode="320000" value="南京">南京</option>
+          </select>
+          <District handleDistrict={this.handleDistrict.bind(this)}></District>
+        </div>;
+      }
+    });
+
+    //Province
+    var Province = React.createClass({
+      getInitialState: function(){
+        return {
+          code: '',
+          pCode: ''
+        }
+      },
+
+      handleCode: function(event){debugger
+        let index;
+        var selectedCode = event.target.selectedOptions[0].getAttribute('data-pCode');
+
+        this.refs.provinceSel.childNodes.forEach((ele, indx) => {
+          selectedCode == ele.getAttribute('data-code') ? index = indx : 0;
+        });
+
+        this.refs.provinceSel.selectedIndex = index;
+      },
+
+      render: function(){
+        return <div>
+          Province:
+          <select ref="provinceSel" style={selectStyle}>
+            <option data-code="610000" value="陕西">陕西</option>
+            <option data-code="320000" value="江苏">江苏</option>
+          </select>
+          <City handleCode={this.handleCode.bind(this)}></City>
+        </div>
+      }
+    });
+
+    ReactDOM.render(
+      <Province />,
+      document.getElementById('example')
+    );
+  </script>
+</body>
+</html>
